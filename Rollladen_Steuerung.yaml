@@ -2,13 +2,16 @@ blueprint:
   name: Rollladen Steuerung
   description: "## Rollladen-Steuerung\n
     Stueurung des Rolladen in Abhängigkeit von Sonnenaufgang und Sonnenuntergang\n
-    Berücksichtigung einer Urzeit, wann frühstens der Rollladen geöffnet werden darf\n
+    Berücksichtung einer Urzeit, wann frühstens der Rollladen geöffnet werden darf\n
     Zusätzlich kann ein Fenster Sensor berücksichtig werden.\n
     Wird das Fenster geöffnet oder ist bereits geöffnet, wenn der Rollladen planmässig\n
     geschlossen werden soll, fährt der Rollladen in die vorgegebene Position (Lüftungs-Stellung)\n
     ### *Voraussetzungen:*\n
     - Cover: Eine Cover Entität (Rollladen)\n
-    - Fenster Sensor: Fenster-Kontakt (binary_sensor) - Optional\n"
+    - Fenster Sensor: Fenster-Kontakt (binary_sensor) - Optional\n
+
+    ℹ️ Version: v.1.1"
+
   source_url: https://github.com/SmartHomeForDummies/Blueprint-HA-Beschattung/blob/main/Rollladen_Steuerung.yaml
   domain: automation
   author: SmartHome for Dummies
@@ -29,6 +32,11 @@ blueprint:
           domain: 
           - binary_sensor
           multiple: false
+    use_window:
+      name: Fenster Berücksichtigen?
+      default: false
+      selector:
+        boolean:
     position:
       name: Position Rollladen
       description: Position des Rollladens beim geöffnetem Fenster 
@@ -79,6 +87,9 @@ trigger:
 - platform: template
   value_template: "{{ is_state ( window_sensor , 'off' ) }}"
   id: 'down'
+variables:
+  window_activ: !input use_window
+  window_status: !input window
 action:
 - choose:
     - conditions:
@@ -90,10 +101,23 @@ action:
         before: sunrise
         before_offset: !input sunrise_time
       sequence:
-        - service: cover.close_cover
-          data: {}
-          target:
-            entity_id: !input cover
+        - if:
+            - condition: template
+              value_template: |
+                {{ window_activ == true }}
+            - condition: template
+              value_template: "{{is_state( window, 'on') }}"
+          then:
+            - service: cover.set_cover_position
+              data:
+                position: !input position
+              target:
+                entity_id: !input cover
+          else:
+            - service: cover.close_cover
+              data: {}
+              target:
+                entity_id: !input cover
     - conditions:
       - condition: trigger
         id: "between"
@@ -102,6 +126,9 @@ action:
         after_offset: !input sunset_time
         before: sunrise
         before_offset: !input sunrise_time
+      - condition: template
+        value_template: |
+          {{ window_activ == true }}
       sequence:
         - service: cover.set_cover_position
           data:
