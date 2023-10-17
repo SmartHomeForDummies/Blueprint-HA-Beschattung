@@ -1,0 +1,122 @@
+blueprint:
+  name: Rollladen Steuerung
+  description: "## Rollladen-Steuerung\n
+    Stueurung des Rolladen in Abhängigkeit von Sonnenaufgang und Sonnenuntergang\n
+    Berücksichtung einer Urzeit, wann frühstens der Rollladen geöffnet werden darf\n
+    Zusätzlich kann ein Fenster Sensor berücksichtig werden.\n
+    Wird das Fenster geöffnet oder ist bereits geöffnet, wenn der Rollladen planmässig\n
+    geschlossen werden soll, fährt der Rollladen in die vorgegebene Position (Lüftungs-Stellung)\n
+    ### *Voraussetzungen:*\n
+    - Cover: Eine Cover Entität (Rollladen)\n
+    - Fenster Sensor: Fenster-Kontakt (binary_sensor) - Optional\n
+  source_url: 
+  domain: automation
+  author: SmartHome for Dummies
+  input:
+    cover:
+      name: Rollladen
+      description: Wähle die Rollladen Entität aus
+      selector:
+        entity:
+          domain: 
+          - cover
+    window:
+      name: Fenster
+      description: Wähle den zugehörigen Fenster Sensor aus (optional)
+      default:
+      selector:
+        entity:
+          domain: 
+          - binary_sensor
+          multiple: false
+    position:
+      name: Position Rollladen
+      description: Position des Rollladens beim geöffnetem Fenster 
+      default: '0'
+      selector:
+        number:
+          min: 0
+          max: 100
+          step: 5
+          unit_of_measurement: "%"
+          mode: slider
+    sunrise_time:
+      name: Sonnenaufgang - Versatz - Zeit
+      description: Versatz Sonnenaufgang.
+      default: "00:00:00"
+      selector:
+        time: 
+    sunset_time:
+      name: Sonnenuntergang - Versatz - Zeit
+      description: Versatz Sonnenuntegang.
+      default: "00:00:00"
+      selector:
+        time: 
+    time:
+      name: Uhrzeit
+      description: Frühste Uhrzeit,wann der Rollladen geöffnet werden darf
+      selector:
+        time:
+mode: restart
+trigger_variables:
+  window_sensor: !input window
+trigger:
+- platform: sun
+  event: sunrise
+  offset: !input sunrise_time
+  id: 'up'
+- platform: time
+  at: !input time
+  id: 'up'
+- platform: sun
+  event: sunset
+  offset: !input sunset_time
+  id: 'down'
+- platform: template
+  value_template: "{{ is_state ( window_sensor , 'on' ) }}"
+  id: 'between'
+- platform: template
+  value_template: "{{ is_state ( window_sensor , 'off' ) }}"
+  id: 'down'
+action:
+- choose:
+    - conditions:
+      - condition: trigger
+        id: "down"
+      - condition: sun
+        after: sunset
+        after_offset: !input sunset_time
+        before: sunrise
+        before_offset: !input sunrise_time
+      sequence:
+        - service: cover.close_cover
+          data: {}
+          target:
+            entity_id: !input cover
+    - conditions:
+      - condition: trigger
+        id: "between"
+      - condition: sun
+        after: sunset
+        after_offset: !input sunset_time
+        before: sunrise
+        before_offset: !input sunrise_time
+      sequence:
+        - service: cover.set_cover_position
+          data:
+            position: !input position
+          target:
+            entity_id: !input cover               
+    - conditions:
+        - condition: trigger
+          id: "up"
+        - condition: time
+          after: !input time
+        - condition: sun
+          after: sunrise
+          after_offset: !input sunrise_time
+      sequence:
+      - service: cover.open_cover
+        data: {}
+        target:
+          entity_id: !input cover
