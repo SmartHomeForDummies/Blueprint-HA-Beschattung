@@ -8,7 +8,7 @@ blueprint:
     geschlossen werden soll, fährt der Rollladen in die vorgegebene Position (Lüftungs-Stellung)\n
     ### *Voraussetzungen:*\n
     - Cover: Eine Cover Entität (Rollladen)\n
-    - Fenster Sensor: Fenster-Kontakt (binary_sensor) - Optional\n
+    - Fenster Sensor: Fenster-Kontakt (binary_sensor) - Optional\n"
   source_url: https://github.com/SmartHomeForDummies/Blueprint-HA-Beschattung/blob/main/Rollladen_Steuerung.yaml
   domain: automation
   author: SmartHome for Dummies
