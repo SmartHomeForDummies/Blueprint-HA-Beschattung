@@ -55,6 +55,7 @@ blueprint:
     time:
       name: Uhrzeit
       description: Frühste Uhrzeit,wann der Rollladen geöffnet werden darf
+      default: "06:00:00"
       selector:
         time:
 mode: restart
