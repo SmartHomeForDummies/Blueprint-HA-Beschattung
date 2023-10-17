@@ -38,7 +38,6 @@ blueprint:
           min: 0
           max: 100
           step: 5
-          unit_of_measurement: '%'
           mode: slider
     sunrise_time:
       name: Sonnenaufgang - Versatz - Zeit
