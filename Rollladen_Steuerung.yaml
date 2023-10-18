@@ -10,7 +10,7 @@ blueprint:
     - Cover: Eine Cover Entität (Rollladen)\n
     - Fenster Sensor: Fenster-Kontakt (binary_sensor) - Optional\n
 
-    ℹ️ Version: v.1.2"
+    ℹ️ Version: v.1.3"
 
   source_url: https://github.com/SmartHomeForDummies/Blueprint-HA-Beschattung/blob/main/Rollladen_Steuerung.yaml
   domain: automation
@@ -87,10 +87,10 @@ trigger:
 - platform: template
   value_template: "{{ is_state ( window_sensor , 'off' ) }}"
   id: 'down'
-variables:
-  window_activ: !input use_window
-  window_status: !input window
 action:
+- variables:
+    window_activ: !input use_window
+    window_status: !input window
 - choose:
     - conditions:
       - condition: trigger
