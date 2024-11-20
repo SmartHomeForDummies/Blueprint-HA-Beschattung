@@ -1,7 +1,7 @@
 blueprint:
   name: Rollladen Steuerung
   description: "## Rollladen-Steuerung\n
-    Steueurung des Rolladen in Abhängigkeit von Sonnenaufgang und Sonnenuntergang\n
+    Steuerung des Rolladen in Abhängigkeit von Sonnenaufgang und Sonnenuntergang\n
     Berücksichtung einer Urzeit, wann frühstens der Rollladen geöffnet werden darf\n
     Zusätzlich kann ein Fenster Sensor berücksichtig werden.\n
     Wird das Fenster geöffnet oder ist bereits geöffnet, wenn der Rollladen planmässig\n
