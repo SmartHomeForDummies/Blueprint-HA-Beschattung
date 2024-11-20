@@ -1,5 +1,5 @@
 # Rollladen Steuerung
-Stueurung des Rolladen in Abhängigkeit von Sonnenaufgang und Sonnenuntergang.
+Steueurung des Rolladen in Abhängigkeit von Sonnenaufgang und Sonnenuntergang.
 Berücksichtigung einer Urzeit, wann frühstens der Rollladen geöffnet werden darf.
 Zusätzlich kann ein Fenster Sensor berücksichtig werden.
 Wird das Fenster geöffnet oder ist bereits geöffnet, wenn der Rollladen planmässig
